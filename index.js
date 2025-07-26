@@ -47,4 +47,24 @@ app.post('/todos', async(req, res) => {
   await writeTodos(todos);
   res.status(201).json(newTodo);
 }) 
+app.patch('/todos/:id',async(req,res)=>{
+  const id=parseInt(req.params.id);
+  const todos = await readTodos();
+  if (!todos) { return res.status(500).send('Error reading todos'); }
+  const todo = todos.find(todo => todo.id === id);
+  if (!todo) { return res.status(404).send('Todo not found'); }
+  todo.completed=true;
+  await writeTodos(todos);
+  res.json(todo);
+})
+app.delete('/todos/:id',async (req,res)=>{
+  const id=parseInt(req.params.id);
+  const todos = await readTodos();
+  if (!todos) { return res.status(500).send('Error reading todos'); }
+  const todo = todos.find(todo => todo.id === id);
+  if (!todo) { return res.status(404).send('Todo not found'); }
+  todos.splice(todos.indexOf(todo), 1);
+  await writeTodos(todos);
+  res.json(todos);
+})
 app.listen(3000)
